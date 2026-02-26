@@ -1,0 +1,18 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-25T18:46:51.181Z",
+  "summary": "The diff implements both REQ-1 (auto-end innings on over completion) and REQ-2 (fix total score display). REQ-1 is addressed via a pendingInningsEnd ref in LiveScoring.tsx that triggers after EndOfOverModal closes, with navigation to scorecard for 2nd innings end and EndOfInningsModal for 1st innings end. REQ-2 is addressed via the computeTotalRunsFromDeliveries utility used in ScoreDisplay, LiveScoring, and Scorecard. Both requirements appear substantially implemented based on the diff evidence.",
+  "missing_requirements": [],
+  "hallucinated_features": [],
+  "confidence": 0.82,
+  "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/src/components/ScoreDisplay.tsx",
+    "frontend/src/hooks/useMatchState.ts",
+    "frontend/src/lib/matchUtils.ts",
+    "frontend/src/pages/LiveScoring.tsx",
+    "frontend/src/pages/Scorecard.tsx",
+    "project_state.json"
+  ]
+}

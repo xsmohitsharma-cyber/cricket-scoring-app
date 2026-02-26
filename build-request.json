@@ -1,0 +1,61 @@
+{
+  "kind": "build_request",
+  "title": "Auto-end innings on over completion and fix total score display",
+  "projectName": "Cricket Scorer",
+  "priority": "high",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "When the number of overs bowled in the current innings equals the match's configured total overs, automatically trigger end-of-innings logic: if the first innings just ended, transition to the second innings setup (show EndOfInningsModal to pick openers and bowler for the second innings); if the second innings just ended, mark the match as complete and navigate to the scorecard/result screen.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "if match is of say 2 overs and 2 over are bowled the inning ends. if first ining is running second will start if second is running match will end"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When overs bowled == configured match overs, the current innings is ended automatically without requiring manual intervention.",
+        "If the ended innings is the first innings, the EndOfInningsModal appears so the user can select openers and bowler for the second innings, and scoring resumes in the second innings.",
+        "If the ended innings is the second innings, the match is marked as complete and the app navigates to the scorecard/result page.",
+        "The over count check triggers after each completed over (6 valid deliveries), not mid-over.",
+        "Existing end-of-over bowler selection modal still appears at end of each over before the innings-end check fires."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Fix the total score field so it is correctly calculated and displayed in the ScoreDisplay component and any other UI locations showing the innings/match total. The total runs for an innings must aggregate all delivery runs (including extras) from the deliveries array and display the correct cumulative score in real time during live scoring.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "also total score is not getting populated"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The total score shown in ScoreDisplay reflects the sum of all runs (including extras) from all deliveries in the current innings.",
+        "The score updates immediately after each delivery is recorded.",
+        "The scorecard page also shows the correct total for each completed innings.",
+        "If no deliveries have been recorded yet, the total score displays as 0."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not change the backend data model or delivery recording endpoints.",
+    "Innings transition logic must reuse the existing EndOfInningsModal component.",
+    "Do not edit any files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui."
+  ],
+  "nonGoals": [
+    "Adding wicket-based innings termination (all out) — not requested in this change.",
+    "Backend changes to store innings completion status.",
+    "Changing the toss or match setup flow."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

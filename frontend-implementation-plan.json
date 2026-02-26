@@ -1,0 +1,57 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Auto-end innings on over completion and fix total score display",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Automatically end innings when overs bowled equals configured match overs, transitioning to second innings setup or match completion as appropriate",
+      "acceptanceCriteria": [
+        "When overs bowled == configured match overs, the current innings is ended automatically without requiring manual intervention.",
+        "If the ended innings is the first innings, the EndOfInningsModal appears so the user can select openers and bowler for the second innings, and scoring resumes in the second innings.",
+        "If the ended innings is the second innings, the match is marked as complete and the app navigates to the scorecard/result page.",
+        "The over count check triggers after each completed over (6 valid deliveries), not mid-over.",
+        "Existing end-of-over bowler selection modal still appears at end of each over before the innings-end check fires."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/LiveScoring.tsx",
+          "operation": "modify",
+          "description": "Add innings completion check logic after each over completes. When the current over number (overs bowled) equals match.rules.oversLimit, trigger innings transition: if currentInnings is 1, open the EndOfInningsModal to configure second innings; if currentInnings is 2, mark the match as finished and navigate to the scorecard page using router.navigate. Ensure this check runs after the EndOfOverModal closes and before allowing the next delivery."
+        },
+        {
+          "path": "frontend/src/hooks/useMatchState.ts",
+          "operation": "modify",
+          "description": "Add a helper method or flag to track when an innings should end based on overs completed. Ensure the innings transition logic properly resets currentOver state when moving from first innings to second innings, and that the match finished state is set when the second innings completes."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Fix total score calculation and display to correctly aggregate all delivery runs including extras in real time",
+      "acceptanceCriteria": [
+        "The total score shown in ScoreDisplay reflects the sum of all runs (including extras) from all deliveries in the current innings.",
+        "The score updates immediately after each delivery is recorded.",
+        "The scorecard page also shows the correct total for each completed innings.",
+        "If no deliveries have been recorded yet, the total score displays as 0."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ScoreDisplay.tsx",
+          "operation": "modify",
+          "description": "Fix the total runs calculation by correctly summing all delivery runs from the deliveries array. Ensure extras (wides, no-balls, byes, leg-byes) are included in the total. The calculation should aggregate delivery.runs for each delivery in the current innings, handling BigInt values properly. Display the calculated total in the score display component."
+        },
+        {
+          "path": "frontend/src/lib/matchUtils.ts",
+          "operation": "modify",
+          "description": "Review and fix the calculateInningsStats or any utility function that computes total runs from deliveries. Ensure the aggregation logic correctly sums delivery.runs for all deliveries, including those with extras flags (isWide, isNoBall, isBye, isLegBye). Return the correct totalRuns value that can be consumed by ScoreDisplay and other components."
+        },
+        {
+          "path": "frontend/src/pages/Scorecard.tsx",
+          "operation": "modify",
+          "description": "Verify that the scorecard page uses the corrected total runs calculation from matchUtils when displaying innings totals. Ensure both first and second innings totals are displayed correctly using the same calculation logic as the live scoring display."
+        }
+      ]
+    }
+  ]
+}
